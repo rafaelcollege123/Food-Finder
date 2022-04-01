@@ -1,0 +1,17 @@
+os: linux
+dist: xenial
+language: generic
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+before_install:
+  - docker-compose up -d --build
+
+script:
+  - docker-compose exec nginx nginx -t
+
+after_script:
+  - docker-compose down

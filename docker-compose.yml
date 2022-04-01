@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ff-client
+    depends_on:
+      - server
+    ports:
+      - 3000:3000
+    volumes:
+      - /usr/app/node_modules
+      - ./frontend:/usr/app
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: ff-server
+    depends_on:
+      - postgres
+    volumes:
+      - ./server:/usr/src/app
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    container_name: ff-nginx
+    restart: always
+    depends_on:
+      - server
+      - client
+    ports:
+      - 80:80
+  postgres:
+    image: postgres
+    container_name: ff-database
+    environment:
+      - POSTGRES_USER=foodfinder
+      - POSTGRES_PASSWORD=foodfinder
+    expose:
+      - 5432
+    volumes:
+      - database:/var/lib/postgresql/data
+
+volumes:
+  database:
